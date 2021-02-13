@@ -11,22 +11,22 @@ namespace DatingApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class ActivitiesController : ControllerBase
     {
         // Используем механизм Dependency Injection, чтобы сохранить
         // ссылку на копию сервиса работы с базой данных
         private readonly DataContext _context;
-        public ValuesController(DataContext context)
+        public ActivitiesController(DataContext context)
         {
             _context = context;
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Value>>> Get()
+        public async Task<ActionResult<IEnumerable<Activity>>> Get()
         {
             // Выполяет SQL-запрос к базе данных, используя LINQ
-            var values = await _context.Values.ToListAsync();
+            var values = await _context.Activities.ToListAsync();
             
             // Возвращаем успешный Http Status Code и полученные данные
             return Ok(values);
@@ -36,7 +36,7 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<string>> Get(int id)
         {
-            var value = await _context.Values.FindAsync(id);
+            var value = await _context.Activities.FindAsync(id);
             return Ok(value);
         }
 
