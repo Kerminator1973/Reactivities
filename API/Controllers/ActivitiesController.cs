@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
@@ -14,7 +13,9 @@ namespace DatingApp.API.Controllers
     public class ActivitiesController : ControllerBase
     {
         // Используем механизм Dependency Injection, чтобы сохранить
-        // ссылку на копию сервиса работы с базой данных
+        // ссылку на медиатор, через который мы передаёт управление
+        // классу, который будет выполнять команду, либо извлекать
+        // данные из СУБД
         private readonly IMediator _mediator;
         public ActivitiesController(IMediator mediator)
         {
@@ -25,7 +26,8 @@ namespace DatingApp.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
         {
-            // Выполяет SQL-запрос к базе данных, используя LINQ
+            // Переадрессует запрос в подкласс класса List из пространства имён
+            // Application.Activities
             var values = await _mediator.Send(new List.Query());
 
             // Возвращаем успешный Http Status Code и полученные данные
