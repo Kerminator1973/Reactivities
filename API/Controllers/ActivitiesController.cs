@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Activities;
 using Domain;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace DatingApp.API.Controllers
 {
@@ -15,31 +15,30 @@ namespace DatingApp.API.Controllers
     {
         // Используем механизм Dependency Injection, чтобы сохранить
         // ссылку на копию сервиса работы с базой данных
-        private readonly DataContext _context;
-        public ActivitiesController(DataContext context)
+        private readonly IMediator _mediator;
+        public ActivitiesController(IMediator mediator)
         {
-            _context = context;
+            this._mediator = mediator;
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Activity>>> Get()
+        public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
         {
             // Выполяет SQL-запрос к базе данных, используя LINQ
-            var values = await _context.Activities.ToListAsync();
-            
+            var values = await _mediator.Send(new List.Query());
+
             // Возвращаем успешный Http Status Code и полученные данные
             return Ok(values);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<string>> Get(int id)
+        public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
-            var value = await _context.Activities.FindAsync(id);
-            return Ok(value);
+            return Ok();
         }
-
+/*
         // POST api/values
         [HttpPost]
         public void Post([FromBody] string value)
@@ -57,5 +56,6 @@ namespace DatingApp.API.Controllers
         public void Delete(int id)
         {
         }
+*/
     }
 }
