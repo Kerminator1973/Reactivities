@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Activities;
-using Domain;
-
 using Microsoft.AspNetCore.Mvc;
+using Domain;
+using Application.Activities;
 
 namespace API.Controllers
 {
@@ -12,11 +11,15 @@ namespace API.Controllers
     [ApiController]
     public class ActivitiesController : BaseApiController
     {
-        // GET api/activities
-        [HttpGet]
+        // Следует обратить внимание, что член класса Mediator инициализируется
+        // в базовом классе BaseApiController и это позволяет не определять в каждом
+        // производном классе-контроллере конструктор для инициализации
+        // медиатора через Dependency Injection
+        
+        [HttpGet]   // GET api/activities
         public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
         {
-            // Переадрессует запрос в подкласс класса List из пространства имён
+            // Переадрессуем запрос в подкласс класса List из пространства имён
             // Application.Activities
             var values = await Mediator.Send(new List.Query());
 
@@ -24,8 +27,7 @@ namespace API.Controllers
             return Ok(values);
         }
 
-        // GET api/activity/8920408c-6588-44c1-8363-88575735e57e
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]   // GET api/activity/8920408c-6588-44c1-8363-88575735e57e
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
             return Ok();

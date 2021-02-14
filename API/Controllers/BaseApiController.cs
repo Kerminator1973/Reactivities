@@ -6,20 +6,15 @@ namespace API.Controllers
 {
     public class BaseApiController : ControllerBase
     {
-        // Используем механизм Dependency Injection, чтобы сохранить
-        // ссылку на медиатор, через который мы передаёт управление
-        // классу, который будет выполнять команду, либо извлекать
-        // данные из СУБД
+        // Базовый класс BaseApiController создан для того, чтобы исключить
+        // из кода всех контроллеров конструктор, необходимый лишь для
+        // инициализации медиатора.
+        
         private IMediator _mediator;
-
+        
+        // Используем конструкцию похожую на Singleton: если член класса нулевой,
+        // то он инициализируется (см. ??=) ссылкой на экземпляр сервиса IMediator
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices
             .GetService<IMediator>();
-        
-        /*
-        public BaseApiController(IMediator mediator)
-        {
-            this._mediator = mediator;
-        }
-        */
     }
 }
