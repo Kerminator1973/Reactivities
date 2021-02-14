@@ -27,10 +27,10 @@ namespace API.Controllers
             return Ok(values);
         }
 
-        [HttpGet("{id}")]   // GET api/activity/8920408c-6588-44c1-8363-88575735e57e
+        [HttpGet("{id}")]   // GET api/activities/8920408c-6588-44c1-8363-88575735e57e
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
-            return Ok();
+            return await Mediator.Send(new Details.Query{Id = id});
         }
 /*
         // POST api/values
