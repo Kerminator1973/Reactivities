@@ -3,38 +3,28 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
-using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace DatingApp.API.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActivitiesController : ControllerBase
+    public class ActivitiesController : BaseApiController
     {
-        // Используем механизм Dependency Injection, чтобы сохранить
-        // ссылку на медиатор, через который мы передаёт управление
-        // классу, который будет выполнять команду, либо извлекать
-        // данные из СУБД
-        private readonly IMediator _mediator;
-        public ActivitiesController(IMediator mediator)
-        {
-            this._mediator = mediator;
-        }
-
-        // GET api/values
+        // GET api/activities
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
         {
             // Переадрессует запрос в подкласс класса List из пространства имён
             // Application.Activities
-            var values = await _mediator.Send(new List.Query());
+            var values = await Mediator.Send(new List.Query());
 
             // Возвращаем успешный Http Status Code и полученные данные
             return Ok(values);
         }
 
-        // GET api/values/5
+        // GET api/activity/8920408c-6588-44c1-8363-88575735e57e
         [HttpGet("{id}")]
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
