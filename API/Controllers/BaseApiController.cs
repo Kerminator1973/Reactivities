@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class BaseApiController : ControllerBase
     {
         // Базовый класс BaseApiController создан для того, чтобы исключить

@@ -7,8 +7,6 @@ using Application.Activities;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class ActivitiesController : BaseApiController
     {
         // Следует обратить внимание, что член класса Mediator инициализируется
@@ -32,13 +30,13 @@ namespace API.Controllers
         {
             return await Mediator.Send(new Details.Query{Id = id});
         }
-/*
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
+        [HttpPost]  // POST api/values
+        public async Task<IActionResult> CreateActivity(Activity activity)
+        {
+            return Ok(await Mediator.Send(new Create.Command {Activity = activity}));
+        }
+/*
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
