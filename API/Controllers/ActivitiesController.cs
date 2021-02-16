@@ -14,7 +14,7 @@ namespace API.Controllers
         // производном классе-контроллере конструктор для инициализации
         // медиатора через Dependency Injection
         
-        [HttpGet]   // GET api/activities
+        [HttpGet]           // GET api/activities
         public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
         {
             // Переадрессуем запрос в подкласс класса List из пространства имён
@@ -31,18 +31,23 @@ namespace API.Controllers
             return await Mediator.Send(new Details.Query{Id = id});
         }
 
-        [HttpPost]  // POST api/values
+        [HttpPost]          // POST api/values
         public async Task<IActionResult> CreateActivity(Activity activity)
         {
             return Ok(await Mediator.Send(new Create.Command {Activity = activity}));
         }
-/*
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        
+        [HttpPut("{id}")]   // PUT api/activities/8920408c-6588-44c1-8363-88575735e57e
+        public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
+            // В форме Activity может не быть установлено поле Id - в соответствии
+            // с правилами RESTful, его нужно брать из http-запроса. Следует обратить
+            // внимание, что {id} и параметр Guid id - это одна и та же сущность
+            activity.Id = id;
+            return Ok(await Mediator.Send(new Edit.Command{Activity = activity}));
         }
 
+/*
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public void Delete(int id)
