@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Domain;
 using MediatR;
 using Persistence;
@@ -16,8 +17,10 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
+                this._mapper = mapper;
                 this._context = context;
             }
 
@@ -25,8 +28,9 @@ namespace Application.Activities
             {
                 var activity = await _context.Activities.FindAsync(request.Activity.Id);
 
-                // Изменяем только одно поле - заголовок действия
-                activity.Title = request.Activity.Title ?? activity.Title;
+                // Выполняем mapping всех полей из request.Activity в объект, полученный
+                // из базы данных (activity)
+                _mapper.Map(request.Activity, activity);
 
                 await _context.SaveChangesAsync();
                 return Unit.Value;
