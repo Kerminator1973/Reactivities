@@ -28,10 +28,10 @@ namespace API.Controllers
         [HttpGet("{id}")]   // GET api/activities/8920408c-6588-44c1-8363-88575735e57e
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
-            return await Mediator.Send(new Details.Query{Id = id});
+            return await Mediator.Send(new Details.Query {Id = id});
         }
 
-        [HttpPost]          // POST api/values
+        [HttpPost]          // POST api/activities
         public async Task<IActionResult> CreateActivity(Activity activity)
         {
             return Ok(await Mediator.Send(new Create.Command {Activity = activity}));
@@ -44,15 +44,13 @@ namespace API.Controllers
             // с правилами RESTful, его нужно брать из http-запроса. Следует обратить
             // внимание, что {id} и параметр Guid id - это одна и та же сущность
             activity.Id = id;
-            return Ok(await Mediator.Send(new Edit.Command{Activity = activity}));
+            return Ok(await Mediator.Send(new Edit.Command {Activity = activity}));
         }
 
-/*
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{id}")]    // DELETE api/activities/8920408c-6588-44c1-8363-88575735e57e
+        public async Task<IActionResult> DeleteActivity(Guid id)
         {
+            return Ok(await Mediator.Send(new Delete.Command {Id = id}));
         }
-*/
     }
 }
