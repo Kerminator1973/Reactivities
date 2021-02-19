@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './App.css';
 import axios from 'axios';
 import { Header, List } from 'semantic-ui-react';
 
@@ -12,7 +11,6 @@ class App extends Component {
   componentDidMount() {
     axios.get('http://localhost:5000/api/activities')
       .then(response =>{
-        console.log(response);
         this.setState({
           values: response.data
         })
