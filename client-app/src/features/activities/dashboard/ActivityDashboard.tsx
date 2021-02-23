@@ -16,6 +16,15 @@ interface Props {
 // вот такой код:
 //      {activities.map((activity) => (
 
+// Ниже в коде используется типовой для JavaScript трюк:
+//      {activities[0] && 
+//      <ActivityDetails activity={activities[0]} />}
+// JSX-код трансформируется в обычный JavaScript-код вызова React-компонента 
+// и при исполнении приведённая выше конструкция сначала сравнит activities[0]
+// с null/undefined (это происходит т.к. используется логическое «И»), и если 
+// значение не пустое, тогда будет вызван React-компонент, которому будет передан 
+// нулевой элемент через свойство activity
+
 export default function ActivityDashboard({activities}: Props) {
     return (
         <Grid>

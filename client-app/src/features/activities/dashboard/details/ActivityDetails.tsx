@@ -6,6 +6,9 @@ interface Props {
     activity: Activity
 }
 
+// Ниже в коде используется string interpolation:
+//      <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
+
 export default function ActivityDetails({activity}: Props) {
     return (
         <Card fluid>
