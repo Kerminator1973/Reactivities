@@ -12,6 +12,10 @@ function App()  {
   // контроль типов при их использовании, см. activities.map()
   const [activities, setActivities] = useState<Activity[]>([]);
 
+  // Определяем дополнительное состояние, которое будет хранить
+  // текущий выбранный Activity-элемент
+  const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
+
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
     axios.get<Activity[]>('http://localhost:5000/api/activities')
@@ -20,11 +24,29 @@ function App()  {
       })
   }, [])
 
+  // Определяем callback-функцию, которая будет искать Activity
+  // в списке Activities по её идентификатору и будет устанавливать
+  // selectedActivity соответствующим образом
+  function handleSelectActivity(id: string) {
+    setSelectedActivity(activities.find(x => x.id === id))
+  }
+
+  // Определяем ещё одну callback-функцию, посредством которой мы можем
+  // отметить выбор некоторой Activity
+  function handleCancelSelectActivity() {
+    setSelectedActivity(undefined);
+  }
+
   return (
     <Fragment>
       <NavBar />
       <Container style={{marginTop: '7em'}}>
-        <ActivityDashboard activities={activities} />
+        <ActivityDashboard 
+          activities={activities}
+          selectedActivity={selectedActivity}
+          selectActivity={handleSelectActivity}
+          cancelSelectActivity={handleCancelSelectActivity}
+        />
       </Container>
     </Fragment>
   );
