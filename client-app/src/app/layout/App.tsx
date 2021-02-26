@@ -16,6 +16,11 @@ function App()  {
   // текущий выбранный Activity-элемент
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
 
+  // Определяем состояние, которое отражает режим работы формы - просмотр,
+  // или редактирование Activity. Для простых типов нам не обязательно
+  // явно указывать тип переменной-состояния
+  const [editMode, setEditMode] = useState(false);
+
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
     axios.get<Activity[]>('http://localhost:5000/api/activities')
@@ -37,15 +42,29 @@ function App()  {
     setSelectedActivity(undefined);
   }
 
+  // Определяем ещё две callback-функции, которые позволяют управлять
+  // режимом "Просмотр/редактирование"
+  function handleFormOpen(id?: string) {
+    id ? handleSelectActivity(id) : handleCancelSelectActivity();
+    setEditMode(true);
+  }
+
+  function handleFormClose() {
+    setEditMode(false);
+  }
+
   return (
     <Fragment>
-      <NavBar />
+      <NavBar openForm={handleFormOpen} />
       <Container style={{marginTop: '7em'}}>
         <ActivityDashboard 
           activities={activities}
           selectedActivity={selectedActivity}
           selectActivity={handleSelectActivity}
           cancelSelectActivity={handleCancelSelectActivity}
+          editMode={editMode}
+          openForm={handleFormOpen}
+          closeForm={handleFormClose}
         />
       </Container>
     </Fragment>

@@ -11,6 +11,9 @@ interface Props {
     selectedActivity: Activity | undefined;
     selectActivity: (id: string) => void;
     cancelSelectActivity: () => void;
+    editMode: boolean;
+    openForm: (id: string) => void;
+    closeForm: () => void;
 }
 
 // Можно было бы использовать упрощённый вариант определения свойства объекта:
@@ -30,16 +33,20 @@ interface Props {
 // нулевой элемент через свойство activity
 
 export default function ActivityDashboard({activities, selectedActivity, 
-        selectActivity, cancelSelectActivity}: Props) {
+        selectActivity, cancelSelectActivity, editMode, openForm, closeForm}: Props) {
     return (
         <Grid>
             <Grid.Column width='10'>
                 <ActivityList activities={activities} selectActivity={selectActivity} />
             </Grid.Column>
             <Grid.Column width='6'>
-                {selectedActivity && 
-                <ActivityDetails activity={selectedActivity} cancelSelectActivity={cancelSelectActivity}/>}
-                <ActivityForm />
+                {selectedActivity && !editMode && <ActivityDetails 
+                    activity={selectedActivity}
+                    cancelSelectActivity={cancelSelectActivity}
+                    openForm={openForm}
+                />}
+                {editMode &&
+                <ActivityForm closeForm={closeForm} activity={selectedActivity} />}
             </Grid.Column>
         </Grid>
     )
