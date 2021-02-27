@@ -5,9 +5,10 @@ import { Activity } from '../../../app/layout/models/activity';
 interface Props {
     activity: Activity | undefined;
     closeForm: () => void;
+    createOrEdit: (activity: Activity) => void;
 }
 
-export default function ActivityForm({activity: selectedActivity, closeForm} : Props) {
+export default function ActivityForm({activity: selectedActivity, closeForm, createOrEdit} : Props) {
 
     // Создаём объект, представляющий не заполненный объект Activity
     const initialState = selectedActivity ?? {
@@ -24,9 +25,12 @@ export default function ActivityForm({activity: selectedActivity, closeForm} : P
     const [activity, setActivity] = useState(initialState);
 
     function handleSubmit() {
-        console.log(activity);
+        createOrEdit(activity);
     }
 
+    // Функция обрабатываем событие об изменении содержимого Input и TextArea.
+    // При получении события в словарь полей (activity) изменяется значение поля
+    // "name" на указанное в "value". Изменение осуществляется посредством spread-оператор
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const {name, value} = event.target;
         setActivity({...activity, [name]: value});
