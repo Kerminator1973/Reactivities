@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useState} from 'react';
-import axios from 'axios';
 import { Container } from 'semantic-ui-react';
-import { Activity } from './models/activity';
-import NavBar from './NavBar';
-import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import {v4 as uuid} from 'uuid';
+import { Activity } from './../models/activity';
+import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
+import NavBar from './NavBar';
+import agent from '../api/agent';
 
 function App()  {
 
@@ -24,10 +24,9 @@ function App()  {
 
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/api/activities')
-      .then(response => {
-          setActivities(response.data);
-      })
+    agent.Activities.list().then(response => {
+      setActivities(response);
+    });
   }, [])
 
   // Определяем callback-функцию, которая будет искать Activity
