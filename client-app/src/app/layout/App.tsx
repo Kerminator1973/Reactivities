@@ -25,9 +25,23 @@ function App()  {
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
     agent.Activities.list().then(response => {
-      setActivities(response);
+
+      // Обрабатываем полученные данные с целью корректировки формата
+      // представления данных. Мы получаем данные в виде строк: 
+      //    2021-01-13T19:08:55.7992459
+      // React умеет обрабатывать строку в виде "2021-01-13"
+      let activities: Activity[] = [];
+      response.forEach(activity => {
+
+        // Отделяем дату от времени
+        activity.date = activity.date.split('T')[0];
+        activities.push(activity);
+      });
+
+      // Устанавливаем полученный список Activities, в качестве состояния компонента 
+      setActivities(activities);
     });
-  }, [])
+  }, []);
 
   // Определяем callback-функцию, которая будет искать Activity
   // в списке Activities по её идентификатору и будет устанавливать
