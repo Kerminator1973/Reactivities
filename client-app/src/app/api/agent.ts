@@ -1,8 +1,31 @@
 import axios, { AxiosResponse } from 'axios';
 import { Activity } from '../models/activity';
 
+// Добавляем функцию, которая будет имитировать задержку при загрузке
+// данных через API. Эта функция нужна только для проверки функционала
+// Progress Bar
+const sleep = (delay: number) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, delay);
+    });
+}
+
 // Фиксируем базовый URL разработанного нами API
 axios.defaults.baseURL = 'http://localhost:5000/api';
+
+// Разрабатываем функцию interceptor, которая будет вызываться
+// при каждом выполнении запроса к API и будет задерживать обработку
+// ответа API выполнение на одну секунду
+axios.interceptors.response.use(async response => {
+    try { 
+        await sleep(1000);
+        return response;
+    }
+    catch (error) {
+        console.log(error);
+        return await Promise.reject(error);
+    }
+});
 
 // Определяем вспомогательную функцию, которая получает на входе объект
 // типа AxiosResponse, а возвращает значение поле "data" (результат запроса).

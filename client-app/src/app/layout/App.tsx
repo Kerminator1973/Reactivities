@@ -5,6 +5,7 @@ import { Activity } from './../models/activity';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import NavBar from './NavBar';
 import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
 
 function App()  {
 
@@ -21,6 +22,10 @@ function App()  {
   // или редактирование Activity. Для простых типов нам не обязательно
   // явно указывать тип переменной-состояния
   const [editMode, setEditMode] = useState(false);
+
+  // Определяем состояние "Загрузка страницы". Начальное состояние - true,
+  // т.е. загрузка начинается в useEffect()
+  const [loading, setLoading] = useState(true);
 
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
@@ -40,6 +45,9 @@ function App()  {
 
       // Устанавливаем полученный список Activities, в качестве состояния компонента 
       setActivities(activities);
+
+      // Изменяем состояние страницы на "Загрузка завершена"
+      setLoading(false);
     });
   }, []);
 
@@ -81,6 +89,10 @@ function App()  {
   function handleDeleteActivity(id: string) {
     setActivities([...activities.filter(x => x.id !== id)]);
   }
+
+  // Если осуществляется загрузка страницы, то возвращает специализированный
+  // компонент, в котором используются Dimmer и Loader
+  if (loading) return <LoadingComponent content='Loading app' />
 
   return (
     <Fragment>
