@@ -100,9 +100,14 @@ function App()  {
     }
   }
 
-  // Определяем функцию, которая возволяет удалять Activity из списка
+  // Определяем функцию, которая возволяет удалять Activity из списка,
+  // а также из базы данных в API
   function handleDeleteActivity(id: string) {
-    setActivities([...activities.filter(x => x.id !== id)]);
+    setSubmitting(true);
+    agent.Activities.delete(id).then(() => {
+      setActivities([...activities.filter(x => x.id !== id)]);
+      setSubmitting(false);
+    });
   }
 
   // Если осуществляется загрузка страницы, то возвращает специализированный
