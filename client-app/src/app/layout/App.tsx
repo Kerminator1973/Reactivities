@@ -23,9 +23,12 @@ function App()  {
   // явно указывать тип переменной-состояния
   const [editMode, setEditMode] = useState(false);
 
-  // Определяем состояние "Загрузка страницы". Начальное состояние - true,
+  // Определяем состояние "Загрузка страницы". Начальное значение - true,
   // т.е. загрузка начинается в useEffect()
   const [loading, setLoading] = useState(true);
+
+  // Определяем состояние "Выполнение Submit"
+  const [submitting, setSubmitting] = useState(false);
 
   // Загружаем список элементов из API, используя Axios
   useEffect(() => {
@@ -78,11 +81,23 @@ function App()  {
   // Определяем функцию, которая будет добавлять, или обновлять Activity
   // в общем списке активностей
   function handleCreateOrEditActivity(activity: Activity) {
-    activity.id 
-      ? setActivities([...activities.filter(x => x.id !== activity.id), activity])
-      : setActivities([...activities, {...activity, id: uuid()}]);
-    setEditMode(false);
-    setSelectedActivity(activity);
+    setSubmitting(true);
+    if (activity.id) {
+      agent.Activities.update(activity).then(() => {
+        setActivities([...activities.filter(x => x.id !== activity.id), activity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      });
+    } else {
+      activity.id = uuid();
+      agent.Activities.create(activity).then(() => {
+        setActivities([...activities, activity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      });
+    }
   }
 
   // Определяем функцию, которая возволяет удалять Activity из списка
@@ -108,6 +123,7 @@ function App()  {
           closeForm={handleFormClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
+          submitting={submitting}
         />
       </Container>
     </Fragment>
