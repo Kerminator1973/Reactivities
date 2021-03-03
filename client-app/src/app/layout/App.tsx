@@ -10,6 +10,9 @@ import { useStore } from '../stores/store';
 
 function App()  {
 
+  // Определяем объект для доступа к централизованному хранилищу.
+  // Хранилище используется в JSX-коде, например:
+  //    <h2>{activityStore.title}</h2>
   const {activityStore} = useStore();
 
   // Определяем состояние функционального компонента. Используя 
