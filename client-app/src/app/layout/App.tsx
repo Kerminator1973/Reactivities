@@ -6,8 +6,11 @@ import ActivityDashboard from '../../features/activities/dashboard/ActivityDashb
 import NavBar from './NavBar';
 import agent from '../api/agent';
 import LoadingComponent from './LoadingComponent';
+import { useStore } from '../stores/store';
 
 function App()  {
+
+  const {activityStore} = useStore();
 
   // Определяем состояние функционального компонента. Используя 
   // специализацию, явно указываем тип состояния, что обеспечивает
@@ -118,6 +121,7 @@ function App()  {
     <Fragment>
       <NavBar openForm={handleFormOpen} />
       <Container style={{marginTop: '7em'}}>
+        <h2>{activityStore.title}</h2>
         <ActivityDashboard 
           activities={activities}
           selectedActivity={selectedActivity}
