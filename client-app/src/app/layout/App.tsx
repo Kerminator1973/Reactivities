@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState} from 'react';
-import { Button, Container } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import {v4 as uuid} from 'uuid';
 import { Activity } from './../models/activity';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
@@ -30,36 +30,14 @@ function App()  {
   // явно указывать тип переменной-состояния
   const [editMode, setEditMode] = useState(false);
 
-  // Определяем состояние "Загрузка страницы". Начальное значение - true,
-  // т.е. загрузка начинается в useEffect()
-  const [loading, setLoading] = useState(true);
-
   // Определяем состояние "Выполнение Submit"
   const [submitting, setSubmitting] = useState(false);
 
-  // Загружаем список элементов из API, используя Axios
+  // Загружаем список элементов из API, используя Axios и систему
+  // управления состояниями приложения ActivityStore
   useEffect(() => {
-    agent.Activities.list().then(response => {
-
-      // Обрабатываем полученные данные с целью корректировки формата
-      // представления данных. Мы получаем данные в виде строк: 
-      //    2021-01-13T19:08:55.7992459
-      // React умеет обрабатывать строку в виде "2021-01-13"
-      let activities: Activity[] = [];
-      response.forEach(activity => {
-
-        // Отделяем дату от времени
-        activity.date = activity.date.split('T')[0];
-        activities.push(activity);
-      });
-
-      // Устанавливаем полученный список Activities, в качестве состояния компонента 
-      setActivities(activities);
-
-      // Изменяем состояние страницы на "Загрузка завершена"
-      setLoading(false);
-    });
-  }, []);
+    activityStore.loadActivities();
+  }, [activityStore]);
 
   // Определяем callback-функцию, которая будет искать Activity
   // в списке Activities по её идентификатору и будет устанавливать
@@ -119,16 +97,14 @@ function App()  {
 
   // Если осуществляется загрузка страницы, то возвращает специализированный
   // компонент, в котором используются Dimmer и Loader
-  if (loading) return <LoadingComponent content='Loading app' />
+  if (activityStore.loadingInitial) return <LoadingComponent content='Loading app' />
 
   return (
     <Fragment>
       <NavBar openForm={handleFormOpen} />
       <Container style={{marginTop: '7em'}}>
-        <h2>{activityStore.title}</h2>
-        <Button content='Add exclamation!' positive onClick={activityStore.setTitle} />
         <ActivityDashboard 
-          activities={activities}
+          activities={activityStore.activities}
           selectedActivity={selectedActivity}
           selectActivity={handleSelectActivity}
           cancelSelectActivity={handleCancelSelectActivity}
