@@ -39,30 +39,6 @@ function App()  {
     activityStore.loadActivities();
   }, [activityStore]);
 
-  // Определяем callback-функцию, которая будет искать Activity
-  // в списке Activities по её идентификатору и будет устанавливать
-  // selectedActivity соответствующим образом
-  function handleSelectActivity(id: string) {
-    setSelectedActivity(activities.find(x => x.id === id))
-  }
-
-  // Определяем ещё одну callback-функцию, посредством которой мы можем
-  // отметить выбор некоторой Activity
-  function handleCancelSelectActivity() {
-    setSelectedActivity(undefined);
-  }
-
-  // Определяем ещё две callback-функции, которые позволяют управлять
-  // режимом "Просмотр/редактирование"
-  function handleFormOpen(id?: string) {
-    id ? handleSelectActivity(id) : handleCancelSelectActivity();
-    setEditMode(true);
-  }
-
-  function handleFormClose() {
-    setEditMode(false);
-  }
-
   // Определяем функцию, которая будет добавлять, или обновлять Activity
   // в общем списке активностей
   function handleCreateOrEditActivity(activity: Activity) {
@@ -101,16 +77,10 @@ function App()  {
 
   return (
     <Fragment>
-      <NavBar openForm={handleFormOpen} />
+      <NavBar />
       <Container style={{marginTop: '7em'}}>
         <ActivityDashboard 
           activities={activityStore.activities}
-          selectedActivity={selectedActivity}
-          selectActivity={handleSelectActivity}
-          cancelSelectActivity={handleCancelSelectActivity}
-          editMode={editMode}
-          openForm={handleFormOpen}
-          closeForm={handleFormClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
           submitting={submitting}

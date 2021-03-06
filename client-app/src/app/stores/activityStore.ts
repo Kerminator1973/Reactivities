@@ -7,7 +7,7 @@ export default class ActivityStore {
 
     // Состояния доступные для чтения
     activities: Activity[] = [];
-    selectedActivity: Activity | null = null;
+    selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading = false;
     loadingInitial = false;
@@ -54,5 +54,26 @@ export default class ActivityStore {
     // Action-метод, через который можно изменять состояние loadingInitial
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
+    }
+
+    // Action-метод позволяет указать выбранную Activity
+    selectActivity = (id: string) => {
+        this.selectedActivity = this.activities.find(a => a.id === id);
+    }
+
+    // Action-метод позволяет отменить ранее выполненный выбор Activity
+    cancelSelectedActivity = () => {
+        this.selectedActivity = undefined;
+    }
+
+    // Action-метод позволяет установить режим редактирования конкретной Activity
+    openForm = (id?: string) => {
+        id ? this.selectActivity(id) : this.cancelSelectedActivity();
+        this.editMode = true;
+    }
+
+    // Action-метод позволяет выйти из режима редактирования параметров формы
+    closeForm = () => {
+        this.editMode = false;
     }
 }
