@@ -1,9 +1,7 @@
-import React, { Fragment, useEffect, useState} from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Container } from 'semantic-ui-react';
-import { Activity } from './../models/activity';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import NavBar from './NavBar';
-import agent from '../api/agent';
 import LoadingComponent from './LoadingComponent';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
@@ -15,29 +13,11 @@ function App()  {
   //    <h2>{activityStore.title}</h2>
   const {activityStore} = useStore();
 
-  // Определяем состояние функционального компонента. Используя 
-  // специализацию, явно указываем тип состояния, что обеспечивает
-  // контроль типов при их использовании, см. activities.map()
-  const [activities, setActivities] = useState<Activity[]>([]);
-
-  // Определяем состояние "Выполнение Submit"
-  const [submitting, setSubmitting] = useState(false);
-
   // Загружаем список элементов из API, используя Axios и систему
   // управления состояниями приложения ActivityStore
   useEffect(() => {
     activityStore.loadActivities();
   }, [activityStore]);
-
-  // Определяем функцию, которая возволяет удалять Activity из списка,
-  // а также из базы данных в API
-  function handleDeleteActivity(id: string) {
-    setSubmitting(true);
-    agent.Activities.delete(id).then(() => {
-      setActivities([...activities.filter(x => x.id !== id)]);
-      setSubmitting(false);
-    });
-  }
 
   // Если осуществляется загрузка страницы, то возвращает специализированный
   // компонент, в котором используются Dimmer и Loader
@@ -47,11 +27,7 @@ function App()  {
     <Fragment>
       <NavBar />
       <Container style={{marginTop: '7em'}}>
-        <ActivityDashboard 
-          activities={activityStore.activities}
-          deleteActivity={handleDeleteActivity}
-          submitting={submitting}
-        />
+        <ActivityDashboard />
       </Container>
     </Fragment>
   );

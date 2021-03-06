@@ -128,4 +128,29 @@ export default class ActivityStore {
             })
         }
     }
+
+    // Action-метод позволяет удалить Activity через API, а также
+    // удалить её из списка локальных activities
+    deleteActivity = async (id: string) => {
+        this.loading = true;
+
+        try {
+            await agent.Activities.delete(id);
+            runInAction(() => {
+                this.activities = [...this.activities.filter(a => a.id !== id)];
+
+                // Если мы удалили текущую активную Activity, то отменям
+                // блок редактирования
+                if (this.selectedActivity?.id === id)
+                    this.cancelSelectedActivity();
+
+                this.loading = false;
+            })
+        } catch (error) {
+            console.log(error);
+            runInAction(() => {
+                this.loading = false;
+            })
+        }
+    }
 }
