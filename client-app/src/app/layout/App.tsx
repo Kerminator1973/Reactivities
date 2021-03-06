@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState} from 'react';
 import { Container } from 'semantic-ui-react';
-import {v4 as uuid} from 'uuid';
 import { Activity } from './../models/activity';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import NavBar from './NavBar';
@@ -21,15 +20,6 @@ function App()  {
   // контроль типов при их использовании, см. activities.map()
   const [activities, setActivities] = useState<Activity[]>([]);
 
-  // Определяем дополнительное состояние, которое будет хранить
-  // текущий выбранный Activity-элемент
-  const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
-
-  // Определяем состояние, которое отражает режим работы формы - просмотр,
-  // или редактирование Activity. Для простых типов нам не обязательно
-  // явно указывать тип переменной-состояния
-  const [editMode, setEditMode] = useState(false);
-
   // Определяем состояние "Выполнение Submit"
   const [submitting, setSubmitting] = useState(false);
 
@@ -38,28 +28,6 @@ function App()  {
   useEffect(() => {
     activityStore.loadActivities();
   }, [activityStore]);
-
-  // Определяем функцию, которая будет добавлять, или обновлять Activity
-  // в общем списке активностей
-  function handleCreateOrEditActivity(activity: Activity) {
-    setSubmitting(true);
-    if (activity.id) {
-      agent.Activities.update(activity).then(() => {
-        setActivities([...activities.filter(x => x.id !== activity.id), activity]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-        setSubmitting(false);
-      });
-    } else {
-      activity.id = uuid();
-      agent.Activities.create(activity).then(() => {
-        setActivities([...activities, activity]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-        setSubmitting(false);
-      });
-    }
-  }
 
   // Определяем функцию, которая возволяет удалять Activity из списка,
   // а также из базы данных в API
@@ -81,7 +49,6 @@ function App()  {
       <Container style={{marginTop: '7em'}}>
         <ActivityDashboard 
           activities={activityStore.activities}
-          createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
           submitting={submitting}
         />

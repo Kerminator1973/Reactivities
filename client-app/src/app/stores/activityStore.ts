@@ -1,6 +1,7 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Activity } from "../models/activity";
+import {v4 as uuid} from 'uuid';
 
 // Определяем хранилище состояний для Activity
 export default class ActivityStore {
@@ -75,5 +76,56 @@ export default class ActivityStore {
     // Action-метод позволяет выйти из режима редактирования параметров формы
     closeForm = () => {
         this.editMode = false;
+    }
+
+    // Action-метод позволяет создать новую Activity через API
+    // и включить её в список локальных activities
+    createActivity = async (activity: Activity) => {
+        this.loading = true;
+        activity.id = uuid();
+
+        try {
+            await agent.Activities.create(activity);
+
+            // Поскольку предыдущая операция была асинхронной (await),
+            // нижеследуюшщий код следует выполнять внутри wrapper-а runInAction()
+            runInAction(() => {
+                this.activities.push(activity);
+                this.selectedActivity = activity;
+                this.editMode = false;
+                this.loading = false;
+            })
+        } catch (error) {
+            console.log(error);
+            runInAction(() => {
+                this.loading = false;
+            })
+        }
+    }
+
+    // Action-метод позволяет изменить Activity через API
+    // и обновить её в списке локальных activities
+    updateActivity = async (activity: Activity) => {
+        this.loading = true;
+
+        try {
+            await agent.Activities.update(activity);
+            runInAction(() => {
+                // Используем spread-оператор для того, чтобы создать новый массив
+                // на базе существующих activities. Используем filter(), чтобы
+                // исключить из нового массива текущий устаревший activity по id.
+                // Затем мы добавляем обновлённый activity в новый массив
+                this.activities = [...this.activities.filter(a => a.id !== activity.id), activity];
+
+                this.selectedActivity = activity;
+                this.editMode = false;
+                this.loading = false;
+            })
+        } catch (error) {
+            console.log(error);
+            runInAction(() => {
+                this.loading = false;
+            })
+        }
     }
 }
