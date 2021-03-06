@@ -7,11 +7,16 @@ import {v4 as uuid} from 'uuid';
 export default class ActivityStore {
 
     // Состояния доступные для чтения
-    activities: Activity[] = [];
+    activityRegistry = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading = false;
-    loadingInitial = false;
+
+    // Чтобы избежать первоначального flickering экрана, устанавливаем
+    // значение не в false (как раньше), а в true - в этом случае, при
+    // начальной загрузке, не будет осуществляться лишнее изменение
+    // состояния и повторный рендеринг документа
+    loadingInitial = true;
 
     constructor() {
         // Метод для автоматического определения переменных состояния
@@ -20,11 +25,16 @@ export default class ActivityStore {
         makeAutoObservable(this);
     }
 
+    // "Вычисляемое значение" (getter) возвращает список Activities 
+    // отсортированных по дате
+    get activitiesByDate() {
+        return Array.from(this.activityRegistry.values()).sort((a, b) => 
+            Date.parse(a.date) - Date.parse(b.date));
+    }
+
     // Метод, посредством которого осуществляется начальная инициализация 
     // списка Activities
     loadActivities = async () => {
-
-        this.setLoadingInitial(true);
 
         try { 
 
@@ -41,7 +51,7 @@ export default class ActivityStore {
 
                 // В отличие от Redux, MobX позволяет использовать
                 // mutation - изменение переменных внутри метода класса
-                this.activities.push(activity);
+                this.activityRegistry.set(activity.id, activity);
             });
 
             this.setLoadingInitial(false);
@@ -59,7 +69,7 @@ export default class ActivityStore {
 
     // Action-метод позволяет указать выбранную Activity
     selectActivity = (id: string) => {
-        this.selectedActivity = this.activities.find(a => a.id === id);
+        this.selectedActivity = this.activityRegistry.get(id);
     }
 
     // Action-метод позволяет отменить ранее выполненный выбор Activity
@@ -90,7 +100,7 @@ export default class ActivityStore {
             // Поскольку предыдущая операция была асинхронной (await),
             // нижеследуюшщий код следует выполнять внутри wrapper-а runInAction()
             runInAction(() => {
-                this.activities.push(activity);
+                this.activityRegistry.set(activity.id, activity);
                 this.selectedActivity = activity;
                 this.editMode = false;
                 this.loading = false;
@@ -111,11 +121,16 @@ export default class ActivityStore {
         try {
             await agent.Activities.update(activity);
             runInAction(() => {
+
+/*                
+                // РАНЬШЕ ИСПОЛЬЗОВАЛСЯ ВОТ ТАКОЙ КОД:
                 // Используем spread-оператор для того, чтобы создать новый массив
                 // на базе существующих activities. Используем filter(), чтобы
                 // исключить из нового массива текущий устаревший activity по id.
                 // Затем мы добавляем обновлённый activity в новый массив
                 this.activities = [...this.activities.filter(a => a.id !== activity.id), activity];
+*/
+                this.activityRegistry.set(activity.id, activity);
 
                 this.selectedActivity = activity;
                 this.editMode = false;
@@ -137,7 +152,8 @@ export default class ActivityStore {
         try {
             await agent.Activities.delete(id);
             runInAction(() => {
-                this.activities = [...this.activities.filter(a => a.id !== id)];
+
+                this.activityRegistry.delete(id);
 
                 // Если мы удалили текущую активную Activity, то отменям
                 // блок редактирования
