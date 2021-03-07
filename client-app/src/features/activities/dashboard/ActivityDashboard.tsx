@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
 import ActivityForm from '../form/ActivityForm';
 import ActivityList from './ActivityList';
@@ -24,8 +25,21 @@ import ActivityDetails from './details/ActivityDetails';
 
 export default observer( function ActivityDashboard() {
 
+    // Определяем объект для доступа к централизованному хранилищу.
+    // Хранилище используется в JSX-коде, например:
+    //    <h2>{activityStore.title}</h2>
     const {activityStore} = useStore();
     const {selectedActivity, editMode} = activityStore;
+
+    // Загружаем список элементов из API, используя Axios и систему
+    // управления состояниями приложения ActivityStore
+    useEffect(() => {
+        activityStore.loadActivities();
+    }, [activityStore]);
+
+    // Если осуществляется загрузка страницы, то возвращает специализированный
+    // компонент, в котором используются Dimmer и Loader
+    if (activityStore.loadingInitial) return <LoadingComponent content='Loading app' />    
 
     return (
         <Grid>
