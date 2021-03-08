@@ -35,7 +35,7 @@ export default class ActivityStore {
     // Метод, посредством которого осуществляется начальная инициализация 
     // списка Activities
     loadActivities = async () => {
-
+        this.loadingInitial = true;
         try { 
 
             const activities = await agent.Activities.list();   
@@ -54,17 +54,32 @@ export default class ActivityStore {
     // Метод, который позволяет получить Activity по идентификатору
     // из реестра, или загрузить их через API
     loadActivity = async (id: string) => {
+
         let activity = this.getActivity(id);
         if (activity) {
             
             // Получаем описание Activity из реестра
             this.selectedActivity = activity;
+            return activity;
+
         } else {
+
+            // Ситуация, в которой у нас может не оказаться в списке
+            // Activities нужной нам Activity с указанным id - это
+            // перезагрузка страницы со свойствами конкретной Activity
+            // кнопкой "Refresh". В этой ситуации мы может только для
+            // загрузить данные текущей Activity через API
             this.loadingInitial = true;
             try {
+
                 activity = await agent.Activities.details(id);
                 this.setActivity(activity);
+                runInAction(() => {
+                    this.selectedActivity = activity;
+                });
                 this.setLoadingInitial(false);
+                return activity;
+
             } catch(error) {
                 console.log(error);
                 this.setLoadingInitial(false);

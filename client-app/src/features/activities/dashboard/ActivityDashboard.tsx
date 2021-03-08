@@ -1,11 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
-import ActivityForm from '../form/ActivityForm';
 import ActivityList from './ActivityList';
-import ActivityDetails from './details/ActivityDetails';
 
 // Можно было бы использовать упрощённый вариант определения свойства объекта:
 //      export default function ActivityDashboard({activities}: Props) {
@@ -14,7 +12,7 @@ import ActivityDetails from './details/ActivityDetails';
 // вот такой код:
 //      {activities.map((activity) => (
 
-// Ниже в коде используется типовой для JavaScript трюк:
+// Ниже в коде использовался типовой для JavaScript трюк:
 //      {activities[0] && 
 //      <ActivityDetails activity={activities[0]} />}
 // JSX-код трансформируется в обычный JavaScript-код вызова React-компонента 
@@ -29,7 +27,6 @@ export default observer( function ActivityDashboard() {
     // Хранилище используется в JSX-коде, например:
     //    <h2>{activityStore.title}</h2>
     const {activityStore} = useStore();
-    const {selectedActivity, editMode} = activityStore;
 
     // Загружаем список элементов из API, используя Axios и систему
     // управления состояниями приложения ActivityStore
@@ -47,9 +44,7 @@ export default observer( function ActivityDashboard() {
                 <ActivityList />
             </Grid.Column>
             <Grid.Column width='6'>
-                {selectedActivity && !editMode && <ActivityDetails />}
-                {editMode &&
-                <ActivityForm />}
+                <h2>Activity filters</h2>
             </Grid.Column>
         </Grid>
     )
