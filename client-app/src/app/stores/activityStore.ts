@@ -39,19 +39,8 @@ export default class ActivityStore {
         try { 
 
             const activities = await agent.Activities.list();   
-
-            // Обрабатываем полученные данные с целью корректировки формата
-            // представления данных. Мы получаем данные в виде строк: 
-            //    2021-01-13T19:08:55.7992459
-            // React умеет обрабатывать строку в виде "2021-01-13"
             activities.forEach(activity => {
-
-                // Отделяем дату от времени
-                activity.date = activity.date.split('T')[0];
-
-                // В отличие от Redux, MobX позволяет использовать
-                // mutation - изменение переменных внутри метода класса
-                this.activityRegistry.set(activity.id, activity);
+                this.setActivity(activity);
             });
 
             this.setLoadingInitial(false);
@@ -62,30 +51,48 @@ export default class ActivityStore {
         }
     }
 
+    // Метод, который позволяет получить Activity по идентификатору
+    // из реестра, или загрузить их через API
+    loadActivity = async (id: string) => {
+        let activity = this.getActivity(id);
+        if (activity) {
+            
+            // Получаем описание Activity из реестра
+            this.selectedActivity = activity;
+        } else {
+            this.loadingInitial = true;
+            try {
+                activity = await agent.Activities.details(id);
+                this.setActivity(activity);
+                this.setLoadingInitial(false);
+            } catch(error) {
+                console.log(error);
+                this.setLoadingInitial(false);
+            }
+        }
+    }
+
+    // Метод обрабатывает Activity с целью корректировки формата
+    // представления данных. Мы получаем данные в виде строк: 
+    //    2021-01-13T19:08:55.7992459
+    // React умеет обрабатывать строку в виде "2021-01-13"
+    private setActivity = (activity: Activity) => {
+
+        // Отделяем дату от времени
+        activity.date = activity.date.split('T')[0];
+
+        // Сохраняем изменённую Activity в реестре
+        this.activityRegistry.set(activity.id, activity);
+    }
+
+    // Вспомогательный private-метод
+    private getActivity = (id: string) => {
+        return this.activityRegistry.get(id);
+    }
+
     // Action-метод, через который можно изменять состояние loadingInitial
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
-    }
-
-    // Action-метод позволяет указать выбранную Activity
-    selectActivity = (id: string) => {
-        this.selectedActivity = this.activityRegistry.get(id);
-    }
-
-    // Action-метод позволяет отменить ранее выполненный выбор Activity
-    cancelSelectedActivity = () => {
-        this.selectedActivity = undefined;
-    }
-
-    // Action-метод позволяет установить режим редактирования конкретной Activity
-    openForm = (id?: string) => {
-        id ? this.selectActivity(id) : this.cancelSelectedActivity();
-        this.editMode = true;
-    }
-
-    // Action-метод позволяет выйти из режима редактирования параметров формы
-    closeForm = () => {
-        this.editMode = false;
     }
 
     // Action-метод позволяет создать новую Activity через API
@@ -152,14 +159,7 @@ export default class ActivityStore {
         try {
             await agent.Activities.delete(id);
             runInAction(() => {
-
                 this.activityRegistry.delete(id);
-
-                // Если мы удалили текущую активную Activity, то отменям
-                // блок редактирования
-                if (this.selectedActivity?.id === id)
-                    this.cancelSelectedActivity();
-
                 this.loading = false;
             })
         } catch (error) {
