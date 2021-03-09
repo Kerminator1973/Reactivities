@@ -4,11 +4,16 @@ import ActivityDashboard from '../../features/activities/dashboard/ActivityDashb
 import NavBar from './NavBar';
 import { observer } from 'mobx-react-lite';
 import HomePage from '../../features/home/HomePage';
-import { Route } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 import ActivityForm from '../../features/activities/form/ActivityForm';
 import ActivityDetails from '../../features/activities/dashboard/details/ActivityDetails';
 
 function App()  {
+
+  // Используем hook useLocation(), чтобы решить проблему сохранения значений в полях
+  // ввода на форме ActivityForm. Проблема связана с использованием useEffect()
+  const location = useLocation();
+
   return (
     <Fragment>
       <NavBar />
@@ -16,7 +21,7 @@ function App()  {
         <Route exact path='/' component={HomePage} />
         <Route exact path='/activities' component={ActivityDashboard} />
         <Route path='/activities/:id' component={ActivityDetails} />
-        <Route path={['/createActivity', '/manage/:id']} component={ActivityForm} />
+        <Route key={location.key} path={['/createActivity', '/manage/:id']} component={ActivityForm} />
       </Container>
     </Fragment>
   );
