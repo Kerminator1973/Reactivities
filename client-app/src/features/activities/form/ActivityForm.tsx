@@ -1,11 +1,16 @@
 import { observer } from 'mobx-react-lite';
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
+import {v4 as uuid} from 'uuid';
 
 export default observer (function ActivityForm() {
+
+    // Хук useHistory позволяет получить объект для управления переходами
+    // между Routes
+    const history = useHistory();
 
     const {activityStore} = useStore();
     const {createActivity, updateActivity, 
@@ -31,9 +36,26 @@ export default observer (function ActivityForm() {
         if (id) loadActivity(id).then(activity => setActivity(activity!))
     }, [id, loadActivity]);
 
-    //
+    // В обработчике нажатия на кнопку "Submit", в зависимости от установленного режима,
+    // по разному устанавливаем адрес возврата к предыдущей форме
     function handleSubmit() {
-        activity.id ? updateActivity(activity) : createActivity(activity);
+
+        if (activity.id.length === 0) {
+            
+            // Добавляем к объекту с ещё не введёнными значениями сгенерированный uuid
+            let newActivity = {
+                ...activity,
+                id: uuid()
+            };
+
+            // Создаём новую Activity через API и переходим на Route
+            createActivity(newActivity).then(() => history.push(`/activities/${newActivity.id}`));
+
+        } else {
+
+            // Изменяем уже существующую Activity и переходим на Route
+            updateActivity(activity).then(() => history.push(`/activities/${activity.id}`));
+        }
     }
 
     // Функция обрабатываем событие об изменении содержимого Input и TextArea.
