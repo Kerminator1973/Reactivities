@@ -27,12 +27,13 @@ export default observer( function ActivityDashboard() {
     // Хранилище используется в JSX-коде, например:
     //    <h2>{activityStore.title}</h2>
     const {activityStore} = useStore();
+    const {loadActivities, activityRegistry} = activityStore;
 
     // Загружаем список элементов из API, используя Axios и систему
     // управления состояниями приложения ActivityStore
     useEffect(() => {
-        activityStore.loadActivities();
-    }, [activityStore]);
+        if (activityRegistry.size <= 1) loadActivities();
+    }, [loadActivities, activityRegistry.size]);
 
     // Если осуществляется загрузка страницы, то возвращает специализированный
     // компонент, в котором используются Dimmer и Loader
