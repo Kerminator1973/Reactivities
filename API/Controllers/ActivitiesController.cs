@@ -15,14 +15,13 @@ namespace API.Controllers
         // медиатора через Dependency Injection
         
         [HttpGet]           // GET api/activities
-        public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
+        public async Task<IActionResult> GetActivities()
         {
             // Переадрессуем запрос в подкласс класса List из пространства имён
             // Application.Activities
-            var values = await Mediator.Send(new List.Query());
 
             // Возвращаем успешный Http Status Code и полученные данные
-            return Ok(values);
+            return HandleResult(await Mediator.Send(new List.Query()));
         }
 
         [HttpGet("{id}")]   // GET api/activities/8920408c-6588-44c1-8363-88575735e57e
@@ -34,7 +33,7 @@ namespace API.Controllers
         [HttpPost]          // POST api/activities
         public async Task<IActionResult> CreateActivity(Activity activity)
         {
-            return Ok(await Mediator.Send(new Create.Command {Activity = activity}));
+            return HandleResult(await Mediator.Send(new Create.Command {Activity = activity}));
         }
         
         [HttpPut("{id}")]   // PUT api/activities/8920408c-6588-44c1-8363-88575735e57e
