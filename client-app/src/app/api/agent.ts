@@ -1,5 +1,7 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 import { Activity } from '../models/activity';
+import {history} from '../..';      // См.: createBrowserHistory()
 
 // Добавляем функцию, которая будет имитировать задержку при загрузке
 // данных через API. Эта функция нужна только для проверки функционала
@@ -17,14 +19,30 @@ axios.defaults.baseURL = 'http://localhost:5000/api';
 // при каждом выполнении запроса к API и будет задерживать обработку
 // ответа API выполнение на одну секунду
 axios.interceptors.response.use(async response => {
-    try { 
-        await sleep(1000);
-        return response;
+    await sleep(1000);
+    return response;
+}, (error: AxiosError) => {
+
+    // Обрабатываем все коды ошибок доступа к REST API в одном месте.
+    // В общем случае, мы либо выводим Toaster, либо выполняем переход
+    // на некоторую страницу приложения (NotFound)
+    const {data, status} = error.response!;
+    switch (status) {
+    case 400:
+        toast.error('bad request');
+        break;
+    case 401:
+        toast.error('unauthorised');
+        break;
+    case 404:
+        // Используем History-объект для перехода на форму "NotFound.tsx"
+        history.push('not-found');
+        break;
+    case 500:
+        toast.error('server error');
+        break;
     }
-    catch (error) {
-        console.log(error);
-        return await Promise.reject(error);
-    }
+    return Promise.reject(error);
 });
 
 // Определяем вспомогательную функцию, которая получает на входе объект
