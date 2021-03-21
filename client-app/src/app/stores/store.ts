@@ -1,16 +1,19 @@
 import { createContext, useContext } from "react";
 import ActivityStore from "./activityStore";
+import CommonStore from "./commonStore";
 
 // MobX позволяет использовать несколько хранилищ состояний, но
 // мы пока используем только одно. Определяем interface для
 // строгой типизации
 interface Store {
-    activityStore: ActivityStore
+    activityStore: ActivityStore;
+    commonStore: CommonStore;
 }
 
 // Определяем и инициализируем объект централизированного хранилища
 export const store: Store = {
-    activityStore: new ActivityStore()
+    activityStore: new ActivityStore(),
+    commonStore: new CommonStore()
 }
 
 // Генерируем функциональный компонент, через который будет

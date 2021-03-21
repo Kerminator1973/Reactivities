@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Activity } from '../models/activity';
 import {history} from '../..';      // См.: createBrowserHistory()
+import { store } from '../stores/store';
 
 // Добавляем функцию, которая будет имитировать задержку при загрузке
 // данных через API. Эта функция нужна только для проверки функционала
@@ -49,7 +50,8 @@ axios.interceptors.response.use(async response => {
         history.push('not-found');
         break;
     case 500:
-        toast.error('server error');
+        store.commonStore.setServerError(data);
+        history.push('/server-error');
         break;
     }
     return Promise.reject(error);
