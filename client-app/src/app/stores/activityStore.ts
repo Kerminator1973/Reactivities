@@ -10,12 +10,7 @@ export default class ActivityStore {
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading = false;
-
-    // Чтобы избежать первоначального flickering экрана, устанавливаем
-    // значение не в false (как раньше), а в true - в этом случае, при
-    // начальной загрузке, не будет осуществляться лишнее изменение
-    // состояния и повторный рендеринг документа
-    loadingInitial = true;
+    loadingInitial = false;
 
     constructor() {
         // Метод для автоматического определения переменных состояния
