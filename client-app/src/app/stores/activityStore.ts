@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Activity } from "../models/activity";
+import { format } from 'date-fns';
 
 // Определяем хранилище состояний для Activity
 export default class ActivityStore {
@@ -23,13 +24,13 @@ export default class ActivityStore {
     // отсортированных по дате
     get activitiesByDate() {
         return Array.from(this.activityRegistry.values()).sort((a, b) => 
-            Date.parse(a.date) - Date.parse(b.date));
+            a.date!.getTime() - b.date!.getTime());
     }
 
     get groupedActivities() {
         return Object.entries(
             this.activitiesByDate.reduce((activities, activity) => {
-                const date = activity.date;
+                const date = format(activity.date!, 'dd MMM yyyy');
                 activities[date] = activities[date] ? [...activities[date], activity] : [activity];
                 return activities;
             }, {} as {[key: string]: Activity[]})
@@ -91,16 +92,9 @@ export default class ActivityStore {
         }
     }
 
-    // Метод обрабатывает Activity с целью корректировки формата
-    // представления данных. Мы получаем данные в виде строк: 
-    //    2021-01-13T19:08:55.7992459
-    // React умеет обрабатывать строку в виде "2021-01-13"
+    //
     private setActivity = (activity: Activity) => {
-
-        // Отделяем дату от времени
-        activity.date = activity.date.split('T')[0];
-
-        // Сохраняем изменённую Activity в реестре
+        activity.date = new Date(activity.date!);
         this.activityRegistry.set(activity.id, activity);
     }
 
