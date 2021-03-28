@@ -1,10 +1,11 @@
 ﻿using Domain;                           // Определение структуры (объекта) Value
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;    // Определение DbContext
 
 namespace Persistence
 {
     // DbContext представляет интерфейс для доступа к базе данных
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions options) : base(options)
         {
@@ -15,9 +16,10 @@ namespace Persistence
 
         // Добавляем Seed - стартовые данные, без которых нормальная работа
         // приложения может быть затруднена. Обычно Seed содержат редко
-        // изменяемые справочники
+        // изменяемые справочникиd
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
             /*
             // В первоначальной версии курса, SeedData добавлялись так:
 
