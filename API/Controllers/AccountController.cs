@@ -21,14 +21,21 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            // Проверяем, есть ли в базе данных пользователь с указанным
+            // адресом электронной почты. Если есть, то получаем информацию
+            // об этом пользователе
             var user = await _userManager.FindByEmailAsync(loginDto.EMail);
-
             if (null == user) return Unauthorized();
 
+            // Проверяем пароль и если пароль корректен, то изменяем состояние
+            // пользователя на "аутентифицирован"
             var result = await _signInManager.CheckPasswordSignInAsync(user, 
                 loginDto.Password, false);
 
             if (result.Succeeded) {
+
+                // Если всё хорошо, то возвращаем в клиентский код данные 
+                // пользователя, а также JWT
                 return new UserDto
                 {
                     DisplayName = user.DisplayName,
