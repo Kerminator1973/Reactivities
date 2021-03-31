@@ -1,3 +1,4 @@
+using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,10 @@ namespace API.Extensions
             .AddSignInManager<SignInManager<AppUser>>();
 
             services.AddAuthentication();
+
+            // Добавляем сервис генерирующий JWT в список доступных 
+            // для Dependency Injection
+            services.AddScoped<TokenService>();
 
             return services;
         }
