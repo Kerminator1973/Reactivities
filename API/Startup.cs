@@ -8,8 +8,10 @@ using Application.Activities;
 using Application.Core;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +31,11 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             // Подключаем контроллеры
-            services.AddControllers().AddFluentValidation(config => {
+            services.AddControllers(opt => {
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            })
+            .AddFluentValidation(config => {
                 config.RegisterValidatorsFromAssemblyContaining<Create>();
             });
 
@@ -63,7 +69,8 @@ namespace API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();    // Настраиваем проверку пользоваетелей по JWT
+            app.UseAuthorization();     // Настраиваем механизм разграничения доступа
 
             // Применяем ранее созданную CORS Policy, активируя соответствующий Middleware
             app.UseCors("CorsPolicy");
