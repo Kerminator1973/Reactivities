@@ -45,7 +45,7 @@ namespace API.Controllers
 
                 // Если всё хорошо, то возвращаем в клиентский код данные 
                 // пользователя, а также JWT
-                CreateUserObject(user);
+                return CreateUserObject(user);
             }
 
             return Unauthorized();
@@ -72,7 +72,7 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
-                CreateUserObject(user);
+                return CreateUserObject(user);
             }
 
             return BadRequest("Problem registering user");

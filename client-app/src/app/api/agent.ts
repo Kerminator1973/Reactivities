@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { Activity } from '../models/activity';
 import {history} from '../..';      // См.: createBrowserHistory()
 import { store } from '../stores/store';
+import { User, UserFormValues } from '../models/user';
 
 // Добавляем функцию, которая будет имитировать задержку при загрузке
 // данных через API. Эта функция нужна только для проверки функционала
@@ -91,10 +92,17 @@ const Activities = {
     delete: (id: string) => axios.delete<void>(`/activities/${id}`)
 }
 
+const Account = {
+    current: () => requests.get<User>('/account'),
+    login: (user: UserFormValues) => requests.post<User>('/account/login', user),
+    register: (user: UserFormValues) => requests.post<User>('/account/register', user)
+}
+
 // Определяем proxy-объект, через который будет предоставляться доступ
 // к методам API
 const agent = {
-    Activities
+    Activities,
+    Account
 }
 
 export default agent;
