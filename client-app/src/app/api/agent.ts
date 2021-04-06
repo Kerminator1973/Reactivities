@@ -17,6 +17,14 @@ const sleep = (delay: number) => {
 // Фиксируем базовый URL разработанного нами API
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
+// Используем Axios Interceptors для того, чтобы добавлять в заголовок
+// каждого запроса JWT
+axios.interceptors.request.use(config => {
+    const token = store.commonStore.token;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
 // Разрабатываем функцию interceptor, которая будет вызываться
 // при каждом выполнении запроса к API и будет задерживать обработку
 // ответа API выполнение на одну секунду

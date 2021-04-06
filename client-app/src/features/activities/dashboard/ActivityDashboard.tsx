@@ -38,7 +38,7 @@ export default observer( function ActivityDashboard() {
 
     // Если осуществляется загрузка страницы, то возвращает специализированный
     // компонент, в котором используются Dimmer и Loader
-    if (activityStore.loadingInitial) return <LoadingComponent content='Loading app' />    
+    if (activityStore.loadingInitial) return <LoadingComponent content='Loading activities...' />    
 
     return (
         <Grid>
