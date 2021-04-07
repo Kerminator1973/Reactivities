@@ -28,6 +28,9 @@ export default class UserStore {
 
             // Переходим на главную страницу приложения
             history.push('/activities');
+
+            //
+            store.modalStore.closeModal();
         }
         catch (error)
         {
