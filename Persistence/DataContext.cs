@@ -14,6 +14,8 @@ namespace Persistence
         // Указываем на необходимость включения в базу данных таблицы Values
         public DbSet<Activity> Activities { get; set; }
 
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+
         // Добавляем Seed - стартовые данные, без которых нормальная работа
         // приложения может быть затруднена. Обычно Seed содержат редко
         // изменяемые справочникиd
@@ -30,6 +32,26 @@ namespace Persistence
                     new Value {Id = 3, Name = "Value 103"}
                 );
             */
+
+            builder.Entity<ActivityAttendee>(x => x.HasKey(aa => new {aa.AppUserId, aa.ActivityId}));
+
+            // Мы говорим: у нас есть сущность (ActivityAttendee), в которой есть
+            // поле-объект (AppUser), которое связано с коллекцией сущностей
+            // (AppUser) по внешнему ключу (AppUserId).
+            // Мы можем увидеть, что в AppUser есть коллекция Activities,
+            // а в сущности Activity есть коллекция Attendees. Когда мы указываем
+            // ключи AppUserId и ActivityId мы загружаем в коллекцию соответствующие
+            // записи по соответствующему идентификатору
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.AppUser)
+                .WithMany(a => a.Activities)
+                .HasForeignKey(aa => aa.AppUserId);
+
+            builder.Entity<ActivityAttendee>()
+                .HasOne(u => u.Activity)
+                .WithMany(a => a.Attendees)
+                .HasForeignKey(aa => aa.ActivityId);
+
         }
     }
 }
