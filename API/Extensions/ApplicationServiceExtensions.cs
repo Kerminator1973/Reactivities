@@ -1,5 +1,7 @@
 using Application.Activities;
 using Application.Core;
+using Application.Interfaces;
+using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,8 +36,11 @@ namespace API.Extensions
             // Подключаем сервис MediatR
             services.AddMediatR(typeof(List.Handler).Assembly);
 
-            // Добавляем сервис AutoMapper
+            // Подключаем сервис AutoMapper
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
+            //  Подключаем сервис поиска имени пользователя из HttpContext-а
+            services.AddScoped<IUserAccessor, UserAccessor>();
 
             return services;
         }
