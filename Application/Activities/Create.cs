@@ -1,10 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
 using Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Activities
 {
@@ -20,7 +22,7 @@ namespace Application.Activities
         // при обработке параметров запроса Create
         public class CommandValidator : AbstractValidator<Command>
         {
-            public CommandValidator() 
+            public CommandValidator()
             {
                 RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
             }
@@ -29,13 +31,26 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, IUserAccessor userAccessor)
             {
-                this._context = context;
+                _userAccessor = userAccessor;
+                _context = context;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
+                var user = await _context.Users.FirstOrDefaultAsync(x => 
+                    x.UserName == _userAccessor.GetUsername());
+
+                var attendee = new ActivityAttendee {
+                    AppUser = user,
+                    Activity = request.Activity,
+                    IsHost = true
+                };
+
+                request.Activity.Attendees.Add(attendee);
+
                 // Включаем изменение (добавление новых данных) в контекст базы данных
                 _context.Activities.Add(request.Activity);
 
