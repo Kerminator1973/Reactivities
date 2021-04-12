@@ -3,11 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Domain;
 using Application.Activities;
-using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]    // ВРЕМЕННО! TO DO: УДАЛИТЬ!
     public class ActivitiesController : BaseApiController
     {
         // Следует обратить внимание, что член класса Mediator инициализируется
