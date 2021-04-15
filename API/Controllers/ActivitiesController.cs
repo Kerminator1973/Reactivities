@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Domain;
 using Application.Activities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -35,6 +36,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command {Activity = activity}));
         }
         
+        [Authorize(Policy = "IsActivityHost")]
         [HttpPut("{id}")]   // PUT api/activities/8920408c-6588-44c1-8363-88575735e57e
         public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
@@ -45,6 +47,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command {Activity = activity}));
         }
 
+        [Authorize(Policy = "IsActivityHost")]
         [HttpDelete("{id}")]    // DELETE api/activities/8920408c-6588-44c1-8363-88575735e57e
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
