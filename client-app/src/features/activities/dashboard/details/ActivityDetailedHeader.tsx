@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import {Button, Header, Item, Segment, Image} from 'semantic-ui-react'
 import {Activity} from '../../../../app/models/activity';
 import { format } from 'date-fns';
+import { useStore } from '../../../../app/stores/store';
 
 const activityImageStyle = {
     filter: 'brightness(30%)'
@@ -23,6 +24,10 @@ interface Props {
 }
 
 export default observer (function ActivityDetailedHeader({activity}: Props) {
+
+    // Получаем из Store объект и выделяем из него отдельные поля
+    // updateAttendance и loading. Это пример destructuring
+    const {activityStore: {updateAttendance, loading}} = useStore();
 
     // Ниже в коде используется string interpolation:
     //      <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
@@ -59,9 +64,9 @@ export default observer (function ActivityDetailedHeader({activity}: Props) {
                         Manage Event
                     </Button>
                 ) : activity.isGoing ? (
-                    <Button>Cancel attendance</Button>
+                    <Button loading={loading} onClick={updateAttendance}>Cancel attendance</Button>
                 ) : (
-                    <Button color='teal'>Join Activity</Button>
+                    <Button loading={loading} onClick={updateAttendance} color='teal'>Join Activity</Button>
                 )}
             </Segment>
         </Segment.Group>
