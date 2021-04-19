@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
-import { Activity } from "../models/activity";
+import { Activity, ActivityFormValues } from "../models/activity";
 import { format } from 'date-fns';
 import { store } from "./store";
 import { Profile } from "../models/profile";
@@ -123,55 +123,44 @@ export default class ActivityStore {
 
     // Action-метод позволяет создать новую Activity через API
     // и включить её в список локальных activities
-    createActivity = async (activity: Activity) => {
-        this.loading = true;
+    createActivity = async (activity: ActivityFormValues) => {
+
+        const user = store.userStore.user;
+        const attendee = new Profile(user!);
+
         try {
             await agent.Activities.create(activity);
+
+            const newActivity = new Activity(activity);
+            newActivity.hostUsername = user!.username;
+            newActivity.attendees = [attendee];
+            this.setActivity(newActivity);
 
             // Поскольку предыдущая операция была асинхронной (await),
             // нижеследуюшщий код следует выполнять внутри wrapper-а runInAction()
             runInAction(() => {
-                this.activityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading = false;
+                this.selectedActivity = newActivity;
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading = false;
-            })
         }
     }
 
     // Action-метод позволяет изменить Activity через API
     // и обновить её в списке локальных activities
-    updateActivity = async (activity: Activity) => {
-        this.loading = true;
-
+    updateActivity = async (activity: ActivityFormValues) => {
         try {
             await agent.Activities.update(activity);
             runInAction(() => {
 
-/*                
-                // РАНЬШЕ ИСПОЛЬЗОВАЛСЯ ВОТ ТАКОЙ КОД:
-                // Используем spread-оператор для того, чтобы создать новый массив
-                // на базе существующих activities. Используем filter(), чтобы
-                // исключить из нового массива текущий устаревший activity по id.
-                // Затем мы добавляем обновлённый activity в новый массив
-                this.activities = [...this.activities.filter(a => a.id !== activity.id), activity];
-*/
-                this.activityRegistry.set(activity.id, activity);
-
-                this.selectedActivity = activity;
-                this.editMode = false;
-                this.loading = false;
+                if (activity.id) {
+                    let updatedActivity = {...this.getActivity(activity.id), ...activity}
+                    this.activityRegistry.set(activity.id, updatedActivity as Activity);
+                    this.selectedActivity = updatedActivity as Activity;
+                }
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loading = false;
-            })
         }
     }
 

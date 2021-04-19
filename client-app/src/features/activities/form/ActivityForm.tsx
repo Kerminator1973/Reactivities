@@ -12,7 +12,7 @@ import MyTextArea from '../../../app/common/form/MyTextArea';
 import MySelectInput from '../../../app/common/form/MySelectInput';
 import { categoryOptions } from '../../../app/common/options/categoryOptions';
 import MyDateInput from '../../../app/common/form/MyDateInput';
-import { Activity } from '../../../app/models/activity';
+import { ActivityFormValues } from '../../../app/models/activity';
 
 export default observer (function ActivityForm() {
 
@@ -21,20 +21,11 @@ export default observer (function ActivityForm() {
     const history = useHistory();
 
     const {activityStore} = useStore();
-    const {createActivity, updateActivity, 
-        loading, loadActivity, loadingInitial} = activityStore;
+    const {createActivity, updateActivity, loadActivity, loadingInitial} = activityStore;
     const {id} = useParams<{id: string}>();
 
     // Определяем состояние, как объект состоящий из нескольких полей
-    const [activity, setActivity] = useState<Activity>({
-        id: '',
-        title: '',
-        category: '',
-        description: '',
-        date: null,
-        city: '',
-        venue: ''
-    });
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     // Определяем схему валидации значений, вводимых в полях формы
     const validationSchema = Yup.object({
@@ -51,14 +42,14 @@ export default observer (function ActivityForm() {
     // Смысл термина «зависимости» состоит именно в том, что код, находящийся внутри
     // хука, зависит от изменения значений этих двух переменных
     useEffect(() => {
-        if (id) loadActivity(id).then(activity => setActivity(activity!))
+        if (id) loadActivity(id).then(activity => setActivity(new ActivityFormValues(activity)))
     }, [id, loadActivity]);
 
     // В обработчике нажатия на кнопку "Submit", в зависимости от установленного режима,
     // по разному устанавливаем адрес возврата к предыдущей форме
-    function handleFromSubmit(activity: Activity) {
+    function handleFromSubmit(activity: ActivityFormValues) {
 
-        if (activity.id.length === 0) {
+        if (!activity.id) {
             
             // Добавляем к объекту с ещё не введёнными значениями сгенерированный uuid
             let newActivity = {
@@ -103,7 +94,7 @@ export default observer (function ActivityForm() {
                         <MyTextInput placeholder="Venue" name='venue' />
                         <Button 
                             disabled={isSubmitting || !dirty || !isValid}
-                            loading={loading} floated='right' positive type='submit' content='Submit' />
+                            loading={isSubmitting} floated='right' positive type='submit' content='Submit' />
                         <Button as={Link} to='/activities' floated='right' type='button' content='Cancel' />
                     </Form>
                 )}
