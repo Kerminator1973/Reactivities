@@ -1,6 +1,7 @@
 using Application.Activities;
 using Application.Core;
 using Application.Interfaces;
+using Infrastructure.Photos;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -39,8 +40,14 @@ namespace API.Extensions
             // Подключаем сервис AutoMapper
             services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
-            //  Подключаем сервис поиска имени пользователя из HttpContext-а
+            // Подключаем сервис поиска имени пользователя из HttpContext-а
             services.AddScoped<IUserAccessor, UserAccessor>();
+
+            // Подключаем сервис для обераций с облачным хранилищем Cloudinary
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+
+            // Подключаем сервис для считывания настроек Cloudinary
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             return services;
         }
