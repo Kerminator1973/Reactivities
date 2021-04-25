@@ -16,6 +16,9 @@ namespace Persistence
 
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
 
+        // У пользователя есть коллекция фотографий
+        public DbSet<Photo> Photos { get; set; }
+
         // Добавляем Seed - стартовые данные, без которых нормальная работа
         // приложения может быть затруднена. Обычно Seed содержат редко
         // изменяемые справочникиd
