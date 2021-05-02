@@ -4,6 +4,7 @@ import { Activity, ActivityFormValues } from '../models/activity';
 import {history} from '../..';      // См.: createBrowserHistory()
 import { store } from '../stores/store';
 import { User, UserFormValues } from '../models/user';
+import { Profile } from '../models/profile';
 
 // Добавляем функцию, которая будет имитировать задержку при загрузке
 // данных через API. Эта функция нужна только для проверки функционала
@@ -107,11 +108,16 @@ const Account = {
     register: (user: UserFormValues) => requests.post<User>('/account/register', user)
 }
 
+const Profiles = {
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+}
+
 // Определяем proxy-объект, через который будет предоставляться доступ
 // к методам API
 const agent = {
     Activities,
-    Account
+    Account,
+    Profiles
 }
 
 export default agent;
