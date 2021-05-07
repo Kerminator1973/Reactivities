@@ -4,7 +4,7 @@ import { Activity, ActivityFormValues } from '../models/activity';
 import {history} from '../..';      // См.: createBrowserHistory()
 import { store } from '../stores/store';
 import { User, UserFormValues } from '../models/user';
-import { Profile } from '../models/profile';
+import { Photo, Profile } from '../models/profile';
 
 // Добавляем функцию, которая будет имитировать задержку при загрузке
 // данных через API. Эта функция нужна только для проверки функционала
@@ -109,7 +109,14 @@ const Account = {
 }
 
 const Profiles = {
-    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+    uploadPhoto: (file: Blob) => {
+        let formData = new FormData();
+        formData.append('File', file);
+        return axios.post<Photo>('photos', formData, {
+            headers: {'Content-type': 'multipart/form-data'}
+        });
+    }
 }
 
 // Определяем proxy-объект, через который будет предоставляться доступ
