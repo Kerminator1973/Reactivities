@@ -108,9 +108,16 @@ const Account = {
     register: (user: UserFormValues) => requests.post<User>('/account/register', user)
 }
 
+// Группа функций позволяет получить информацию о профиле пользователя (включая URL-фотографий),
+// а также выгрузить фотографию на сервер, через API
 const Profiles = {
     get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
     uploadPhoto: (file: Blob) => {
+
+        // Чтобы данные были корректно обработаны на сервере, необходимо
+        // создать специализированный запрос с использованием formData
+        // и дополнительным указанием типа контента (multipart/form-data).
+        // Имя передаваемого блока данных (File) является критичным
         let formData = new FormData();
         formData.append('File', file);
         return axios.post<Photo>('photos', formData, {
