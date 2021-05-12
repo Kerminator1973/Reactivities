@@ -19,6 +19,9 @@ namespace Persistence
         // У пользователя есть коллекция фотографий
         public DbSet<Photo> Photos { get; set; }
 
+        public DbSet<Comment> Comments { get; set; }
+
+
         // Добавляем Seed - стартовые данные, без которых нормальная работа
         // приложения может быть затруднена. Обычно Seed содержат редко
         // изменяемые справочникиd
@@ -55,6 +58,10 @@ namespace Persistence
                 .WithMany(a => a.Attendees)
                 .HasForeignKey(aa => aa.ActivityId);
 
+            builder.Entity<Comment>()
+                .HasOne(a => a.Activity)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
