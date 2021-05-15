@@ -49,6 +49,9 @@ namespace API.Extensions
             // Подключаем сервис для считывания настроек Cloudinary
             services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
+            // Подключаем сервис SignalR
+            services.AddSignalR();
+
             return services;
         }
     }
