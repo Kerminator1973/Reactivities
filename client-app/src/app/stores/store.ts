@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import ActivityStore from "./activityStore";
+import CommentStore from "./commentStore";
 import CommonStore from "./commonStore";
 import ModalStore from "./modalStores";
 import ProfileStore from "./profileStore";
@@ -14,6 +15,7 @@ interface Store {
     userStore: UserStore;
     modalStore: ModalStore;
     profileStore: ProfileStore;
+    commentStore: CommentStore;
 }
 
 // Определяем и инициализируем объект централизированного хранилища
@@ -22,7 +24,8 @@ export const store: Store = {
     commonStore: new CommonStore(),
     userStore: new UserStore(),
     modalStore: new ModalStore(),
-    profileStore: new ProfileStore()
+    profileStore: new ProfileStore(),
+    commentStore: new CommentStore()
 }
 
 // Генерируем функциональный компонент, через который будет
