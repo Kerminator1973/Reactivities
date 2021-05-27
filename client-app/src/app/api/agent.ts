@@ -127,7 +127,9 @@ const Profiles = {
     setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
     deletePhoto: (id: string) => requests.delete(`/photos/${id}`),
     updateProfile: (profile: Partial<Profile>) => requests.put(`/profiles`, profile),
-    updateFollowing: (username: string) => requests.post(`/follow/${username}`, {})
+    updateFollowing: (username: string) => requests.post(`/follow/${username}`, {}),
+    listFollowings: (username: string, predicated: string) => 
+        requests.get<Profile[]>(`/follow/${username}?predicate=${predicated}`)
 }
 
 // Определяем proxy-объект, через который будет предоставляться доступ
