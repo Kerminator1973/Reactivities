@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Domain;
 using Application.Activities;
 using Microsoft.AspNetCore.Authorization;
+using Application.Core;
 
 namespace API.Controllers
 {
@@ -15,13 +16,13 @@ namespace API.Controllers
         // медиатора через Dependency Injection
         
         [HttpGet]           // GET api/activities
-        public async Task<IActionResult> GetActivities()
+        public async Task<IActionResult> GetActivities([FromQuery]PagingParams param)
         {
             // Переадрессуем запрос в подкласс класса List из пространства имён
             // Application.Activities
 
             // Возвращаем успешный Http Status Code и полученные данные
-            return HandleResult(await Mediator.Send(new List.Query()));
+            return HandleResult(await Mediator.Send(new List.Query{Params = param}));
         }
 
         [HttpGet("{id}")]   // GET api/activities/8920408c-6588-44c1-8363-88575735e57e
