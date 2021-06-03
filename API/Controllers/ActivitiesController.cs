@@ -22,7 +22,7 @@ namespace API.Controllers
             // Application.Activities
 
             // Возвращаем успешный Http Status Code и полученные данные
-            return HandleResult(await Mediator.Send(new List.Query{Params = param}));
+            return HandlePagedResult(await Mediator.Send(new List.Query{Params = param}));
         }
 
         [HttpGet("{id}")]   // GET api/activities/8920408c-6588-44c1-8363-88575735e57e

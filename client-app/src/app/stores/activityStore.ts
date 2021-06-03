@@ -4,6 +4,7 @@ import { Activity, ActivityFormValues } from "../models/activity";
 import { format } from 'date-fns';
 import { store } from "./store";
 import { Profile } from "../models/profile";
+import { Pagination } from "../models/pagination";
 
 // Определяем хранилище состояний для Activity
 export default class ActivityStore {
@@ -14,6 +15,7 @@ export default class ActivityStore {
     editMode = false;
     loading = false;
     loadingInitial = false;
+    pagination: Pagination | null = null;
 
     constructor() {
         // Метод для автоматического определения переменных состояния
@@ -45,17 +47,21 @@ export default class ActivityStore {
         this.loadingInitial = true;
         try { 
 
-            const activities = await agent.Activities.list();   
-            activities.forEach(activity => {
+            const result = await agent.Activities.list();   
+            result.data.forEach(activity => {
                 this.setActivity(activity);
             });
-
+            this.setPagination(result.pagination);
             this.setLoadingInitial(false);
 
         } catch (error) {
             console.log(error);
             this.setLoadingInitial(false);
         }
+    }
+
+    setPagination = (pagination: Pagination) => {
+        this.pagination = pagination;
     }
 
     // Метод, который позволяет получить Activity по идентификатору
