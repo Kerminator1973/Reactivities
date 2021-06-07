@@ -16,7 +16,7 @@ namespace API.Controllers
         // медиатора через Dependency Injection
         
         [HttpGet]           // GET api/activities
-        public async Task<IActionResult> GetActivities([FromQuery]PagingParams param)
+        public async Task<IActionResult> GetActivities([FromQuery]ActivityParams param)
         {
             // Переадрессуем запрос в подкласс класса List из пространства имён
             // Application.Activities
