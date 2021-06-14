@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Application.Profiles
 {
-    public class UserAvtivityDto
+    public class UserActivityDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

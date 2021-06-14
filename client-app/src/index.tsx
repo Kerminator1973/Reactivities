@@ -10,6 +10,7 @@ import reportWebVitals from './reportWebVitals';
 import { store, StoreContext } from './app/stores/store';
 import { Router } from 'react-router-dom';
 import {createBrowserHistory} from 'history';
+import ScrollToTop from './app/layout/ScrollToTop';
 
 // Поскольку нам может потребоваться доступ к History из TypeScript-класса
 // не являющегося функциональным компонентом React, мы экспортируем функцию
@@ -19,6 +20,7 @@ export const history = createBrowserHistory();
 ReactDOM.render(
   <StoreContext.Provider value={store}>
     <Router history={history}>
+      <ScrollToTop />
       <App />
     </Router>
   </StoreContext.Provider>,
